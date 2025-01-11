@@ -36,19 +36,34 @@ class Developer implements MakerInterface
 }
 
 /**
- * Прокси. Содержит в себе ссылку, позволяющую обратиться к реальному субъекту
+ * Прокси. Содержит в себе ссылку, позволяющую обратиться к реальному субъекту.
+ * Прокси может сам отвечать за создание и удаление объекта сервиса.
  */
 class ProductManager implements MakerInterface
 {
     private Developer $developer;
 
-    public function __construct(Developer $developer)
+    public function __construct()
     {
-        $this->developer = $developer;
+        /**
+         * Чаще всего, сервисный объект создаётся самим прокси.
+         * В редких случаях заместитель получает готовый сервисный 
+         * объект от клиента (от клиентского кода) через конструктор
+         */
+        $this->developer = new Developer;
+    }
+
+    public function addTask(string $task): void
+    {
+        $this->developer->addTask($task);
     }
 
     public function completeAllTasks(): void
     {
+        /**
+         * Проверка прав для выполнения нужной операции.
+         * Согласно GOF, этот прокси является "Защищающим"
+         */
         if (! $this->checkAccess()) {
             return;
         }
@@ -70,12 +85,10 @@ class ProductManager implements MakerInterface
     }
 }
 
-$developer = new Developer;
+$productManager = new ProductManager();
 
-$developer->addTask('#1 make header');
-$developer->addTask('#2 add body');
-$developer->addTask('#3 add footer');
-
-$productManager = new ProductManager($developer);
+$productManager->addTask('dev#1 make header');
+$productManager->addTask('dev#2 add body');
+$productManager->addTask('dev#3 add footer');
 
 $productManager->completeAllTasks();
