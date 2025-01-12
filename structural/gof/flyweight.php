@@ -5,10 +5,10 @@
  * 
  * Применяет совместное использование для эффективной поддержки множества мелких объектов.
  * 
- * Состояние, необходимое приспособленцу для нормальной работы, классифицируется
+ * Состояние, необходимое легковесу для нормальной работы, классифицируется
  * на внутреннее и внешнее. Внутреннее состояние хранится в самом объекте
  * ConcreteFlyweight. Внешнее состояние хранится или вычисляется клиентами.
- * Клиент передаёт его приспособленцу при вызове операций.
+ * Клиент передаёт его (внешнее состояние) легковесу при вызове операций.
  * 
  * Клиенты не должны создавать экземпляры класса ConcreteFlyweight напрямую,
  * а могут получать их только от объекта FlyweightFactory. Это позволит гарантировать
@@ -31,12 +31,9 @@
  */
 class TreeType
 {
-    /**
-     * Делаем публичными, чтобы не плодить много геттеров
-     */
-    public string $name;
-    public string $color;
-    public string $texture;
+    private string $name;
+    private string $color;
+    private string $texture;
 
     public function __construct(string $name, string $color, string $texture)
     {
@@ -47,7 +44,22 @@ class TreeType
 
     public function draw($canvas, $x, $y)
     {
+        echo "[TREE]: Рисую на {$canvas} по координатам: x = {$x}; y = {$y}" . PHP_EOL;
+    }
 
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getColor(): string
+    {
+        return $this->color;
+    }
+
+    public function getTexture(): string
+    {
+        return $this->texture;
     }
 }
 
@@ -70,7 +82,7 @@ class Tree
 
     public function draw(string $canvas): void
     {
-        echo "[TREE]: Рисую на {$canvas} по координатам: x = {$this->x}; y = {$this->y}" . PHP_EOL;
+        $this->treeType->draw($canvas, $this->x, $this->y);
     }
 }
 
@@ -106,7 +118,11 @@ class TreeFactory
         $mustFindKey = self::makeKey($name, $color, $texture);
 
         foreach (self::$treeTypes as $treeType) {
-            $currentKey = self::makeKey($treeType->name, $treeType->color, $treeType->texture);
+            $currentKey = self::makeKey(
+                $treeType->getName(),
+                $treeType->getColor(),
+                $treeType->getTexture()
+            );
 
             if ($mustFindKey === $currentKey) {
                 return $treeType;
@@ -118,7 +134,11 @@ class TreeFactory
 
     private static function add(TreeType $treeType): void
     {
-        $currentKey = self::makeKey($treeType->name, $treeType->color, $treeType->texture);
+        $currentKey = self::makeKey(
+            $treeType->getName(), 
+            $treeType->getColor(), 
+            $treeType->getTexture()
+        );
         self::$treeTypes[$currentKey] = $treeType;
     }
 
