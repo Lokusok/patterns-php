@@ -47,7 +47,7 @@ class LinuxButton implements ButtonInterface
 {
     public function render(): void
     {
-        echo '<linux-button />' ;
+        echo '<linux-button />' . PHP_EOL;
     }
 
     public function onClick(): void
