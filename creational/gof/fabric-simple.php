@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Простая фабрика - порождающий паттерн проектирования, который используется для создания объектов.
+ * Он предоставляет единое место для создания объектов, что упрощает управление
+ * созданием объектов и их конфигурацией.
+ */
+
 interface ButtonInterface
 {
     public function render(): void;
@@ -11,12 +17,12 @@ class WindowsButton implements ButtonInterface
 {
     public function render(): void
     {
-        echo '<windows-button />' ;
+        echo '<windows-button />' . PHP_EOL;
     }
 
     public function onClick(): void
     {
-        echo 'Clicked on WindowsButton';
+        echo 'Clicked on WindowsButton' . PHP_EOL;
     }
 }
 
@@ -24,12 +30,12 @@ class LinuxButton implements ButtonInterface
 {
     public function render(): void
     {
-        echo '<linux-button />' ;
+        echo '<linux-button />' . PHP_EOL;
     }
 
     public function onClick(): void
     {
-        echo 'Clicked on LinuxButton';
+        echo 'Clicked on LinuxButton' . PHP_EOL;
     } 
 }
 

@@ -1,9 +1,16 @@
 <?php
 
+/**
+ * Фабричный метод - порождающий паттерн проектирования, который позволяет создавать объекты,
+ * не указывая конкретный класс создаваемого объекта.
+ *
+ * В отличие от абстрактной фабрики, которая фокусируется на создании семейства объектов,
+ * фабричный метод фокусируется на создании объектов одного типа.
+ */
+
 interface ButtonInterface
 {
     public function render(): void;
-
     public function onClick(): void;
 }
 
@@ -11,12 +18,12 @@ class WindowsButton implements ButtonInterface
 {
     public function render(): void
     {
-        echo '<windows-button />' ;
+        echo '<windows-button />' . PHP_EOL;
     }
 
     public function onClick(): void
     {
-        echo 'Clicked on WindowsButton';
+        echo 'Clicked on WindowsButton' . PHP_EOL;
     }
 }
 
@@ -24,50 +31,56 @@ class LinuxButton implements ButtonInterface
 {
     public function render(): void
     {
-        echo '<linux-button />' ;
+        echo '<linux-button />' . PHP_EOL;
     }
 
     public function onClick(): void
     {
-        echo 'Clicked on LinuxButton';
+        echo 'Clicked on LinuxButton' . PHP_EOL;
     } 
 }
 
-abstract class AbstractGuiFactory
+abstract class ButtonFactory
 {
-    abstract public function makeButton(): ButtonInterface;
-}
+    abstract public function createButton(): ButtonInterface;
 
-class WindowsGuiFactory extends AbstractGuiFactory
-{
-    public function makeButton(): ButtonInterface
+    public function renderButton(): void
     {
-        return new WindowsButton;
+        $button = $this->createButton();
+        $button->render();
+    }
+
+    public function clickButton(): void
+    {
+        $button = $this->createButton();
+        $button->onClick();
     }
 }
 
-class LinuxGuiFactory extends AbstractGuiFactory
+class WindowsButtonFactory extends ButtonFactory
 {
-    public function makeButton(): ButtonInterface
+    public function createButton(): ButtonInterface
     {
-        return new LinuxButton;
+        return new WindowsButton();
+    }
+}
+
+class LinuxButtonFactory extends ButtonFactory
+{
+    public function createButton(): ButtonInterface
+    {
+        return new LinuxButton();
     }
 }
 
 $platforms = ['windows', 'linux'];
 $currentPlatform = $platforms[array_rand($platforms)];
 
-// Выбираем нужную фабрику исходя из платформы
 if ($currentPlatform === 'windows') {
-    $guiFactory = new WindowsGuiFactory;
+    $buttonFactory = new WindowsButtonFactory();
 } elseif ($currentPlatform === 'linux') {
-    $guiFactory = new LinuxGuiFactory;
+    $buttonFactory = new LinuxButtonFactory();
 }
 
-// Получаем определённую фабрику с общим интерфейсом.
-// Исходя из принципа зависимости от абстракции (в нашем случае интерфейса)
-// Программе далее должно быть всё равно, фабрика эта WindowsGuiFactory или LinuxGuiFactory
-// (Т.к. везде тайпхинтим через интерфейс)$button = $guiFactory->makeButton();
-$button = $guiFactory->makeButton();
-
-var_dump($button);
+$buttonFactory->renderButton();
+$buttonFactory->clickButton();
